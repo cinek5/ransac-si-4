@@ -25,5 +25,11 @@ public class Main {
         System.out.println("wyznczono pary pkt kluczowych");
 
         DrawImage.vizulization(image1, image2, keyPointPairs);
+
+        NeighbourhoodCoherenceFilter neighbourhoodCoherenceFilter = new NeighbourhoodCoherenceFilter(keyPointPairs, 7, 5);
+
+        List<Pair> filteredPairs = neighbourhoodCoherenceFilter.getFilteredPairs();
+
+        DrawImage.vizulization(image1, image2, filteredPairs);
     }
 }
