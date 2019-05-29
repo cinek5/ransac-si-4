@@ -1,0 +1,95 @@
+package com.cinek;
+
+import org.ejml.simple.SimpleMatrix;
+
+import java.awt.image.SampleModel;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Created by Cinek on 29.05.2019.
+ */
+public class Ransac {
+
+    private int numIters;
+
+    private int numSamples;
+
+    private Transform transform;
+
+    private double maxError;
+
+    public Ransac(int numIters, int numSamples, Transform
+            transform, double maxError ) {
+        this.numIters = numIters;
+        this.numSamples = numSamples;
+        this.transform = transform;
+        this.maxError = maxError;
+    }
+
+    public SimpleMatrix findBestModel(List<Pair> pairs) {
+        SimpleMatrix bestModel = null;
+        int bestScore = 0;
+
+        for (int i = 0; i < numIters; i++) {
+            SimpleMatrix model = null;
+            Set<Pair> samples = new HashSet<>(3);
+            while (model == null) {
+
+
+                samples.add(getRandomPair(pairs));
+
+                if (samples.size() == numSamples) {
+                    List<Pair> samplesList = new ArrayList<>(samples);
+                    try {
+                        model = transform.computeTransform(samplesList.get(0).getPointA(), samplesList.get(1).getPointA(),
+                                samplesList.get(2).getPointA(), samplesList.get(0).getPointB(), samplesList.get(1).getPointB(),
+                                samplesList.get(2).getPointB());
+                    } catch( Exception e)
+                    {
+                        model = null;
+                        samples = new HashSet<>(3);
+                    }
+                }
+            }
+
+            int score = 0;
+
+            for (Pair pair: pairs)
+            {
+                double error = modelError(pair, model);
+                if (error < maxError )
+                {
+                    score++;
+                }
+            }
+            if (score>bestScore)
+            {
+                bestScore = score;
+                bestModel = model;
+            }
+
+        }
+
+        return bestModel;
+    }
+
+    public Pair getRandomPair(List<Pair> pairs) {
+        int rand = (int)( Math.random() * pairs.size());
+        return pairs.get(rand);
+    }
+
+    public double modelError(Pair pair, SimpleMatrix model)
+    {
+        Point pointA = pair.getPointA();
+        Point pointB = pair.getPointB();
+        Point transformedPoint = transform.transform(pointA, model);
+
+
+        return Math.sqrt((transformedPoint.getY() - pointB.getY()) * (transformedPoint.getY() - pointB.getY())
+                + (transformedPoint.getX() - pointB.getX()) * (transformedPoint.getX() - pointB.getX()));
+
+    }
+}
