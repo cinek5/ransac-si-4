@@ -30,17 +30,27 @@ public class Main {
 
         DrawImage.vizulization(image1, image2, keyPointPairs);
 
-        NeighbourhoodCoherenceFilter neighbourhoodCoherenceFilter = new NeighbourhoodCoherenceFilter(keyPointPairs, 50, 45);
+        System.out.println(keyPointPairs.size());
+
+        NeighbourhoodCoherenceFilter neighbourhoodCoherenceFilter = new NeighbourhoodCoherenceFilter(keyPointPairs, 6, 5);
+
+
 
         List<Pair> filteredPairs = neighbourhoodCoherenceFilter.getFilteredPairs();
 
+        System.out.println(filteredPairs.size());
+
         DrawImage.vizulization(image1, image2, filteredPairs);
 
-        Transform transform = new AffineTransform();
-        Ransac ransac = new Ransac(1050000, 3, transform,0.5);
+        //Transform transform = new AffineTransform();
+        Transform transform = new PerspectiveTransform();
+        Ransac ransac = new Ransac(105000, transform,25);
+        TransformFilter transformFilter = new TransformFilter(ransac);
 
-        SimpleMatrix model = ransac.findBestModel(filteredPairs);
+        List<Pair> ransacPairs = transformFilter.filter(filteredPairs);
 
-        DrawImage.vizulizationRansac(image1, image2, filteredPairs, transform, model );
+
+
+        DrawImage.vizulizationRansac(image1, image2, filteredPairs,ransacPairs );
     }
 }

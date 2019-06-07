@@ -2,6 +2,8 @@ package com.cinek;
 import org.ejml.simple.SimpleMatrix;
 import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.util.List;
+
 
 /**
  * Created by Cinek on 29.05.2019.
@@ -33,8 +35,18 @@ public class AffineTransform implements Transform {
         return new Point(u,v);
     }
 
-    public SimpleMatrix computeTransform(Point a1, Point a2, Point a3,  Point b1, Point b2, Point b3)
+    public SimpleMatrix computeTransform(List<Point> points
+    )
     {
+        Point a1 = points.get(0);
+        Point a2 = points.get(1);
+        Point a3 = points.get(2);
+
+        Point b1 = points.get(3);
+        Point b2 = points.get(4);
+        Point b3 = points.get(5);
+
+
         double x1 = a1.getX();
         double y1 = a1.getY();
 
@@ -66,5 +78,10 @@ public class AffineTransform implements Transform {
 
         return ret;
 
+    }
+
+    @Override
+    public int getNumSamples() {
+        return 3;
     }
 }

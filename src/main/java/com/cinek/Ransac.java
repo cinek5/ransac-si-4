@@ -19,12 +19,12 @@ public class Ransac {
 
     private Transform transform;
 
-    private double maxError;
+    double maxError;
 
-    public Ransac(int numIters, int numSamples, Transform
+    public Ransac(int numIters,  Transform
             transform, double maxError ) {
         this.numIters = numIters;
-        this.numSamples = numSamples;
+        this.numSamples = transform.getNumSamples();
         this.transform = transform;
         this.maxError = maxError;
     }
@@ -42,15 +42,22 @@ public class Ransac {
                 samples.add(getRandomPair(pairs));
 
                 if (samples.size() == numSamples) {
-                    List<Pair> samplesList = new ArrayList<>(samples);
+                    List<Point> pointsA = new ArrayList<>();
+                    List<Point> pointsB = new ArrayList<>();
+                    for (Pair pair : samples)
+                    {
+                        pointsA.add(pair.getPointA());
+                        pointsB.add(pair.getPointB());
+                    }
+                    List<Point> points = new ArrayList<>();
+                    points.addAll(pointsA);
+                    points.addAll(pointsB);
                     try {
-                        model = transform.computeTransform(samplesList.get(0).getPointA(), samplesList.get(1).getPointA(),
-                                samplesList.get(2).getPointA(), samplesList.get(0).getPointB(), samplesList.get(1).getPointB(),
-                                samplesList.get(2).getPointB());
+                        model = transform.computeTransform(points);
                     } catch( Exception e)
                     {
                         model = null;
-                        samples = new HashSet<>(3);
+                        samples = new HashSet<>(numSamples);
                     }
                 }
             }

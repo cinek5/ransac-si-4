@@ -47,7 +47,7 @@ public class DrawImage {
 
     }
 
-    public  static void vizulizationRansac(String path1, String path2, List<Pair> pairs, Transform transform, SimpleMatrix model) {
+    public  static void vizulizationRansac(String path1, String path2, List<Pair> pairs, List<Pair> ransacPairs) {
 
 // The image URL - change to where your image file is located!
 
@@ -65,7 +65,7 @@ public class DrawImage {
 
 // Add a component with a custom paint method
 
-        frame.add(new CustomPaintComponent(image, image2, pairs, transform, model));
+        frame.add(new CustomPaintComponent(image, image2, pairs, ransacPairs));
 
 // Display the frame
 
@@ -90,13 +90,11 @@ public class DrawImage {
         Image image2;
 
         List<Pair> pairList;
-        Transform transform;
-        SimpleMatrix model;
-        public CustomPaintComponent(Image image1, Image image2, List<Pair> pairs, Transform transform, SimpleMatrix model)
+        List<Pair> ransacPairs;
+        public CustomPaintComponent(Image image1, Image image2, List<Pair> pairs, List<Pair> ransacPairs)
         {
             this(image1, image2, pairs);
-            this.transform = transform;
-            this.model = model;
+            this.ransacPairs = ransacPairs;
         }
 
         CustomPaintComponent(Image image1, Image image2, List<Pair> pairs)
@@ -137,12 +135,12 @@ public class DrawImage {
                 g2d.drawLine((int) a.getX(), (int) a.getY(), (int) b.getX(), (int) b.getY()+heightOffset);
             }
 
-            if (transform!=null)
+            if (ransacPairs!=null)
             {
-                for (Pair pair : pairList)
+                for (Pair pair : ransacPairs)
                 {
                     Point a = pair.getPointA();
-                    Point b = transform.transform(a, model);
+                    Point b = pair.getPointB();
 
                     g2d.setColor(Color.yellow);
                     g2d.drawLine((int) a.getX(), (int) a.getY(), (int) b.getX(), (int) b.getY()+heightOffset);
